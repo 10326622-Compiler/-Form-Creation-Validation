@@ -1,41 +1,52 @@
-// Async function to fetch user data
-async function fetchUserData() {
-    // Define the API URL
-    const apiUrl = 'https://jsonplaceholder.typicode.com/users';
+// Wrap entire script in DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', function() {
+    // Form Selection
+    const form = document.getElementById('registration-form');
     
-    // Select the data container element
-    const dataContainer = document.getElementById('api-data');
+    // Feedback Division Selection
+    const feedbackDiv = document.getElementById('form-feedback');
     
-    // Fetch data using try-catch
-    try {
-        // Fetch data from API
-        const response = await fetch(apiUrl);
+    // Form Submission Event Listener
+    form.addEventListener('submit', function(event) {
+        // Prevent form from submitting to server
+        event.preventDefault();
         
-        // Convert response to JSON
-        const users = await response.json();
+        // Retrieve User Inputs and trim whitespace
+        const username = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
         
-        // Clear the loading message
-        dataContainer.innerHTML = '';
+        // Initialize Validation Variables
+        let isValid = true;
+        const messages = [];
         
-        // Create and append user list
-        const userList = document.createElement('ul');
+        // Username Validation
+        if (username.length < 3) {
+            isValid = false;
+            messages.push('Username must be at least 3 characters long.');
+        }
         
-        // Loop through users and create list items
-        users.forEach(user => {
-            const listItem = document.createElement('li');
-            listItem.textContent = user.name;
-            userList.appendChild(listItem);
-        });
+        // Email Validation
+        if (!email.includes('@') || !email.includes('.')) {
+            isValid = false;
+            messages.push('Email must contain @ and . characters.');
+        }
         
-        // Append the user list to the container
-        dataContainer.appendChild(userList);
+        // Password Validation
+        if (password.length < 8) {
+            isValid = false;
+            messages.push('Password must be at least 8 characters long.');
+        }
         
-    } catch (error) {
-        // Error handling
-        dataContainer.innerHTML = '';
-        dataContainer.textContent = 'Failed to load user data.';
-    }
-}
-
-// Invoke fetchUserData on DOMContentLoaded
-document.addEventListener('DOMContentLoaded', fetchUserData);
+        // Feedback Display Logic
+        feedbackDiv.style.display = 'block';
+        
+        if (isValid) {
+            feedbackDiv.textContent = 'Registration successful!';
+            feedbackDiv.style.color = '#28a745';
+        } else {
+            feedbackDiv.innerHTML = messages.join('<br>');
+            feedbackDiv.style.color = '#dc3545';
+        }
+    });
+});
